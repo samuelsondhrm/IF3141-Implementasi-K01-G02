@@ -11,5 +11,14 @@
             <field name="numbercall">-1</field>
             <field name="nextcall" eval="(DateTime.now() + relativedelta(days=1)).strftime('%Y-%m-%d 17:01:00')"/>
         </record>
+        <record id="cron_sesi_meja_melewati_batas" model="ir.cron">
+            <field name="name">Unlimited Billiard: tandai sesi meja melewati batas</field>
+            <field name="model_id" ref="model_ub_sesi_meja"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_melewati_batas()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+        </record>
     </data>
 </odoo>
