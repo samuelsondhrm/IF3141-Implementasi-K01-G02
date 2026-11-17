@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="stock_picking_view_form_no_faktur" model="ir.ui.view">
+        <field name="name">stock.picking.form.no.faktur</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="ub_no_faktur" invisible="picking_type_code != 'incoming'"
+                       required="picking_type_code == 'incoming' and state not in ('draft', 'cancel', 'done')"
+                       readonly="state in ('cancel', 'done')"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="stock_picking_view_tree_no_faktur" model="ir.ui.view">
+        <field name="name">stock.picking.tree.no.faktur</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="ub_no_faktur" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

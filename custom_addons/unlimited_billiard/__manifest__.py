@@ -19,6 +19,7 @@
     "data": [
         "security/ir.model.access.csv",
         "views/serah_terima_views.xml",
+        "views/stock_picking_views.xml",
         "data/company.xml",
         "data/master_data.xml",
         "data/pos_data.xml",
