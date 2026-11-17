@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- L-14 Keanggotaan -->
+    <record id="ub_keanggotaan_view_tree" model="ir.ui.view">
+        <field name="name">ub.keanggotaan.tree</field>
+        <field name="model">ub.keanggotaan</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="partner_id"/>
+                <field name="tgl_mulai"/>
+                <field name="tgl_berakhir"/>
+                <field name="pos_order_id" optional="show"/>
+                <field name="status" widget="badge"
+                       decoration-success="status == 'aktif'" decoration-danger="status == 'kedaluwarsa'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="ub_keanggotaan_view_form" model="ir.ui.view">
+        <field name="name">ub.keanggotaan.form</field>
+        <field name="model">ub.keanggotaan</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="status" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="partner_id" options="{'no_create': True}" readonly="id"/>
+                            <field name="pos_order_id"/>
+                        </group>
+                        <group>
+                            <field name="tgl_mulai" readonly="id"/>
+                            <field name="tgl_berakhir"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="ub_keanggotaan_view_search" model="ir.ui.view">
+        <field name="name">ub.keanggotaan.search</field>
+        <field name="model">ub.keanggotaan</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="partner_id"/>
+                <filter name="filter_aktif" string="Aktif" domain="[('status', '=', 'aktif')]"/>
+                <filter name="filter_kedaluwarsa" string="Kedaluwarsa" domain="[('status', '=', 'kedaluwarsa')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_status" string="Status" context="{'group_by': 'status'}"/>
+                    <filter name="group_bulan" string="Bulan Mulai" context="{'group_by': 'tgl_mulai:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="ub_keanggotaan_action" model="ir.actions.act_window">
+        <field name="name">Keanggotaan</field>
+        <field name="res_model">ub.keanggotaan</field>
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Belum ada keanggotaan</p>
+            <p>Keanggotaan terbentuk otomatis saat produk Keanggotaan 1 Bulan dibayar di POS dengan pelanggan terpilih.</p>
+        </field>
+    </record>
+
+    <!-- Pelanggan (D-13): persetujuan data, status member, anonimisasi -->
+    <record id="res_partner_view_form_pelanggan" model="ir.ui.view">
+        <field name="name">res.partner.form.pelanggan</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="ub_keanggotaan" string="Keanggotaan &amp; Persetujuan" invisible="is_company">
+                    <group>
+                        <group string="Persetujuan Data">
+                            <field name="ub_persetujuan_data"/>
+                            <field name="ub_tgl_persetujuan"/>
+                            <field name="ub_persetujuan_promosi"/>
+                            <field name="ub_is_anonim" invisible="not ub_is_anonim"/>
+                        </group>
+                        <group string="Member">
+                            <field name="ub_status_member" widget="badge"
+                                   decoration-success="ub_status_member == 'aktif'"
+                                   decoration-danger="ub_status_member == 'kedaluwarsa'"/>
+                            <button name="action_anonimkan" type="object" string="Anonimkan Data Pelanggan"
+                                    class="btn-secondary" groups="point_of_sale.group_pos_manager"
+                                    invisible="ub_is_anonim or not id"
+                                    confirm="Nama, nomor ponsel, dan alamat pelanggan akan dihapus permanen. Riwayat transaksi tetap tersimpan. Lanjutkan?"/>
+                        </group>
+                    </group>
+                    <field name="ub_keanggotaan_ids" readonly="1">
+                        <tree>
+                            <field name="tgl_mulai"/>
+                            <field name="tgl_berakhir"/>
+                            <field name="pos_order_id"/>
+                            <field name="status" widget="badge"
+                                   decoration-success="status == 'aktif'" decoration-danger="status == 'kedaluwarsa'"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="res_partner_view_tree_pelanggan" model="ir.ui.view">
+        <field name="name">res.partner.tree.pelanggan</field>
+        <field name="model">res.partner</field>
+        <field name="mode">primary</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="phone"/>
+                <field name="ub_status_member" widget="badge"
+                       decoration-success="ub_status_member == 'aktif'"
+                       decoration-danger="ub_status_member == 'kedaluwarsa'"/>
+                <field name="ub_persetujuan_data"/>
+                <field name="ub_persetujuan_promosi" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="res_partner_view_search_pelanggan" model="ir.ui.view">
+        <field name="name">res.partner.search.pelanggan</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='inactive']" position="before">
+                <filter name="ub_member_aktif" string="Member Aktif" domain="[('ub_status_member', '=', 'aktif')]"/>
+                <filter name="ub_member_kedaluwarsa" string="Member Kedaluwarsa"
+                        domain="[('ub_status_member', '=', 'kedaluwarsa')]"/>
+                <separator/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="ub_pelanggan_action" model="ir.actions.act_window">
+        <field name="name">Pelanggan</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('is_company', '=', False), ('user_ids', '=', False), ('supplier_rank', '=', 0)]</field>
+        <field name="context">{'ub_pelanggan': True, 'default_is_company': False, 'default_ub_persetujuan_data': False}</field>
+        <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'tree', 'view_id': ref('res_partner_view_tree_pelanggan')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Daftarkan pelanggan</p>
+            <p>Pelanggan baru wajib menyetujui pemrosesan data pribadi (tab Keanggotaan &amp; Persetujuan).</p>
+        </field>
+    </record>
+
+    <!-- Menu Customers bawaan POS diganti dengan daftar Pelanggan (UC-13). -->
+    <record id="point_of_sale.menu_point_of_sale_customer" model="ir.ui.menu">
+        <field name="name">Pelanggan</field>
+        <field name="action" ref="ub_pelanggan_action"/>
+    </record>
+    <menuitem id="menu_ub_keanggotaan" name="Keanggotaan" parent="point_of_sale.menu_point_of_sale"
+              action="ub_keanggotaan_action" sequence="101"/>
+</odoo>

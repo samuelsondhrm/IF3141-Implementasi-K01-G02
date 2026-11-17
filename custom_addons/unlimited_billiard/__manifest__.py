@@ -1,6 +1,6 @@
 {
     "name": "Unlimited Billiard & Cafe",
-    "summary": "Konfigurasi, data dummy M4, dan serah terima shift Kitchen (L-17)",
+    "summary": "Konfigurasi, data dummy, sesi meja, stock opname, keanggotaan, dan serah terima shift",
     "version": "17.0.1.0.0",
     "license": "LGPL-3",
     "author": "IF3141 K01-G02",
@@ -20,10 +20,12 @@
         "security/ir.model.access.csv",
         "views/serah_terima_views.xml",
         "views/stock_picking_views.xml",
+        "views/keanggotaan_views.xml",
         "data/company.xml",
         "data/master_data.xml",
         "data/pos_data.xml",
         "data/users_partners.xml",
+        "data/cron.xml",
         "views/settings_views.xml",
     ],
 }

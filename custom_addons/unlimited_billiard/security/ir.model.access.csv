@@ -3,3 +3,6 @@ access_ub_serah_terima_user,ub.serah.terima.shift user,model_ub_serah_terima_shi
 access_ub_serah_terima_manager,ub.serah.terima.shift manager,model_ub_serah_terima_shift,stock.group_stock_manager,1,1,1,1
 access_ub_detail_serah_terima_user,ub.detail.serah.terima user,model_ub_detail_serah_terima,stock.group_stock_user,1,1,1,1
 access_ub_orderpoint_stock_user,stock.warehouse.orderpoint stock user (UC-18),stock.model_stock_warehouse_orderpoint,stock.group_stock_user,1,1,1,1
+access_ub_keanggotaan_pos_user,ub.keanggotaan pos user,model_ub_keanggotaan,point_of_sale.group_pos_user,1,1,1,0
+access_ub_keanggotaan_pos_manager,ub.keanggotaan pos manager,model_ub_keanggotaan,point_of_sale.group_pos_manager,1,1,1,1
+access_ub_keanggotaan_internal,ub.keanggotaan internal read,model_ub_keanggotaan,base.group_user,1,0,0,0

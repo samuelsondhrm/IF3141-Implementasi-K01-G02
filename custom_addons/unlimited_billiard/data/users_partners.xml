@@ -61,38 +61,43 @@
             <field name="groups_id" eval="[(6, 0, [ref('base.group_user')])]"/>
         </record>
 
-        <!-- Pelanggan dan member (Bagian 9). Masa berlaku dan persetujuan di catatan internal (workaround FR-12). -->
-        <record id="tag_member_aktif" model="res.partner.category">
-            <field name="name">Member Aktif</field>
-            <field name="color">10</field>
-        </record>
-        <record id="tag_member_kedaluwarsa" model="res.partner.category">
-            <field name="name">Member Kedaluwarsa</field>
-            <field name="color">1</field>
-        </record>
+        <!-- Pelanggan (Bagian 9). Status member berasal dari ub.keanggotaan (FR-12), tarif member dipilih
+             otomatis oleh ub.sesi.meja (FR-13), jadi semua pelanggan memakai pricelist Reguler. -->
         <record id="pelanggan_andi" model="res.partner">
             <field name="name">Andi Saputra</field>
             <field name="phone">0812-1111-2001</field>
-            <field name="category_id" eval="[(6, 0, [ref('tag_member_aktif')])]"/>
-            <field name="property_product_pricelist" ref="pricelist_member"/>
-            <field name="comment"><![CDATA[<p>Member: 2 Nov 2026 – 2 Des 2026</p><p>Persetujuan data: Ya · Persetujuan promosi: Ya</p>]]></field>
+            <field name="property_product_pricelist" ref="pricelist_reguler"/>
+            <field name="ub_persetujuan_data" eval="True"/>
+            <field name="ub_persetujuan_promosi" eval="True"/>
         </record>
         <record id="pelanggan_sinta" model="res.partner">
             <field name="name">Sinta Maharani</field>
             <field name="phone">0812-1111-2002</field>
-            <field name="category_id" eval="[(6, 0, [ref('tag_member_kedaluwarsa')])]"/>
             <field name="property_product_pricelist" ref="pricelist_reguler"/>
-            <field name="comment"><![CDATA[<p>Member: 15 Sep 2026 – 15 Okt 2026 (kedaluwarsa)</p><p>Persetujuan data: Ya · Persetujuan promosi: Tidak</p>]]></field>
+            <field name="ub_persetujuan_data" eval="True"/>
+            <field name="ub_persetujuan_promosi" eval="False"/>
         </record>
         <record id="pelanggan_rizky" model="res.partner">
             <field name="name">Rizky Ramadhan</field>
             <field name="phone">0812-1111-2003</field>
             <field name="property_product_pricelist" ref="pricelist_reguler"/>
-            <field name="comment"><![CDATA[<p>Persetujuan data: Ya · Persetujuan promosi: Ya</p>]]></field>
+            <field name="ub_persetujuan_data" eval="True"/>
+            <field name="ub_persetujuan_promosi" eval="True"/>
         </record>
         <record id="pelanggan_umum" model="res.partner">
             <field name="name">Pelanggan Umum</field>
             <field name="property_product_pricelist" ref="pricelist_reguler"/>
+        </record>
+
+        <!-- Tanggal relatif terhadap hari instalasi: Andi selalu aktif (mulai 15 hari lalu),
+             Sinta selalu kedaluwarsa (mulai 2 bulan lalu). -->
+        <record id="keanggotaan_andi" model="ub.keanggotaan">
+            <field name="partner_id" ref="pelanggan_andi"/>
+            <field name="tgl_mulai" eval="(DateTime.today() - relativedelta(days=15)).strftime('%Y-%m-%d')"/>
+        </record>
+        <record id="keanggotaan_sinta" model="ub.keanggotaan">
+            <field name="partner_id" ref="pelanggan_sinta"/>
+            <field name="tgl_mulai" eval="(DateTime.today() - relativedelta(months=2)).strftime('%Y-%m-%d')"/>
         </record>
 
         <record id="kartu_andi" model="loyalty.card">
