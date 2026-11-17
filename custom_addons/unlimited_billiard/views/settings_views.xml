@@ -6,6 +6,19 @@
     <function model="res.groups" name="write"
               eval="[[ref('base.group_user')], {'implied_ids': [(4, ref('uom.group_uom'))]}]"/>
 
+    <!-- FR-07 op. (2): semua PO butuh Approve Order Manajer (bawaan hanya di atas nilai tertentu).
+         FR-03 / D-04: stok bahan dipotong saat pesanan POS lunas, bukan saat sesi kas ditutup. -->
+    <function model="res.company" name="write"
+              eval="[[ref('base.main_company')], {'po_double_validation': 'two_step', 'po_double_validation_amount': 0, 'point_of_sale_update_stock_quantities': 'real'}]"/>
+
+    <!-- FR-13 op. (7): ubah harga dan diskon baris di POS hanya untuk POS Manager (Bayu). -->
+    <function model="pos.config" name="write"
+              eval="[[ref('pos_config_kasir_admin')], {'restrict_price_control': True}]"/>
+
+    <!-- Kata sandi demo seragam untuk semua role (tercantum di README). Hanya untuk lingkungan demo. -->
+    <function model="res.users" name="write"
+              eval="[[ref('user_rina'), ref('user_dimas'), ref('user_ujang'), ref('user_fajar'), ref('user_bayu'), ref('user_hendra'), ref('user_lina')], {'password': 'unlimited123'}]"/>
+
     <!-- UC-18: Admin dan Kitchen (Inventory User) ikut memantau Replenishment. -->
     <record id="stock.menu_reordering_rules_replenish" model="ir.ui.menu">
         <field name="groups_id" eval="[(4, ref('stock.group_stock_user'))]"/>

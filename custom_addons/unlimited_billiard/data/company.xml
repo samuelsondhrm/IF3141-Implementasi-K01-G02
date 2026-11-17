@@ -10,9 +10,9 @@
             <field name="street">Jl. Tubagus Ismail No. 27</field>
             <field name="city">Bandung</field>
             <field name="country_id" ref="base.id"/>
-            <!-- FR-07: PO di atas Rp100.000 butuh persetujuan Manajer. -->
+            <!-- FR-07: semua PO butuh persetujuan Manajer (nilai juga ditulis ulang di settings_views.xml). -->
             <field name="po_double_validation">two_step</field>
-            <field name="po_double_validation_amount">100000</field>
+            <field name="po_double_validation_amount">0</field>
         </record>
 
         <record id="base.user_admin" model="res.users">
