@@ -22,7 +22,7 @@ Satu modul kustom, `custom_addons/unlimited_billiard`, di atas Odoo 17.0 Communi
 
 | Fitur | Model / komponen | FR |
 |---|---|---|
-| Sesi meja: tombol *Mulai Sesi / Selesai Sesi* di POS, biaya per menit, tarif Early Time / member dipilih otomatis dan dipecah per segmen jam | `ub.sesi.meja`, `static/src/sesi_meja_button.*` | FR-08, FR-13 |
+| Sesi meja: tombol *Mulai Sesi / Selesai Sesi* di POS, status meja di denah, biaya per menit, tarif Early Time / member dipilih otomatis dan dipecah per segmen jam | `ub.sesi.meja`, `static/src/sesi_meja_button.*`, `static/src/denah_status_meja.*` | FR-08, FR-13 |
 | *Stock opname* Kitchen: draf → ajukan → validasi/kembalikan oleh Manajer, % selisih dalam rupiah | `ub.stock.opname`, `ub.stock.opname.line` | FR-04 |
 | Serah terima *shift* Kitchen untuk bahan kritis | `ub.serah.terima.shift`, `ub.detail.serah.terima` | FR-05 |
 | Keanggotaan 1 bulan (otomatis saat dibayar di POS), *cron* kedaluwarsa, persetujuan data, anonimisasi | `ub.keanggotaan`, ekstensi `res.partner` | FR-12 |
