@@ -8,3 +8,6 @@ access_ub_keanggotaan_pos_manager,ub.keanggotaan pos manager,model_ub_keanggotaa
 access_ub_keanggotaan_internal,ub.keanggotaan internal read,model_ub_keanggotaan,base.group_user,1,0,0,0
 access_ub_sesi_meja_pos_user,ub.sesi.meja pos user,model_ub_sesi_meja,point_of_sale.group_pos_user,1,1,1,0
 access_ub_sesi_meja_pos_manager,ub.sesi.meja pos manager,model_ub_sesi_meja,point_of_sale.group_pos_manager,1,1,1,1
+access_ub_stock_opname_user,ub.stock.opname user,model_ub_stock_opname,stock.group_stock_user,1,1,1,0
+access_ub_stock_opname_manager,ub.stock.opname manager,model_ub_stock_opname,stock.group_stock_manager,1,1,1,1
+access_ub_stock_opname_line_user,ub.stock.opname.line user,model_ub_stock_opname_line,stock.group_stock_user,1,1,1,1

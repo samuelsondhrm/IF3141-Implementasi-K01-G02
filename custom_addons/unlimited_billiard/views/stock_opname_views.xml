@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- L-15 Pencatatan dan L-16 Validasi Stock Opname (FR-04) -->
+    <record id="ub_stock_opname_view_tree" model="ir.ui.view">
+        <field name="name">ub.stock.opname.tree</field>
+        <field name="model">ub.stock.opname</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="tanggal"/>
+                <field name="petugas_id"/>
+                <field name="validator_id" optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="nilai_sistem" optional="hide"/>
+                <field name="nilai_selisih_absolut" sum="Total"/>
+                <field name="persen_selisih"/>
+                <field name="status" widget="badge"
+                       decoration-muted="status == 'draf'"
+                       decoration-warning="status == 'menunggu_validasi'"
+                       decoration-success="status == 'tervalidasi'"
+                       decoration-danger="status == 'dikembalikan'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="ub_stock_opname_view_form" model="ir.ui.view">
+        <field name="name">ub.stock.opname.form</field>
+        <field name="model">ub.stock.opname</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_segarkan" type="object" string="Segarkan Stok Sistem"
+                            invisible="status != 'draf' or not id"/>
+                    <button name="action_ajukan" type="object" string="Ajukan Validasi" class="btn-primary"
+                            invisible="status != 'draf' or not id"/>
+                    <button name="action_validasi" type="object" string="Validasi" class="btn-primary"
+                            groups="stock.group_stock_manager" invisible="status != 'menunggu_validasi'"
+                            confirm="Stok Kitchen akan disesuaikan dengan jumlah fisik. Lanjutkan?"/>
+                    <button name="action_kembalikan" type="object" string="Kembalikan"
+                            groups="stock.group_stock_manager" invisible="status != 'menunggu_validasi'"/>
+                    <button name="action_ke_draf" type="object" string="Perbaiki (Kembali ke Draf)"
+                            class="btn-primary" invisible="status != 'dikembalikan'"/>
+                    <field name="status" widget="statusbar" statusbar_visible="draf,menunggu_validasi,tervalidasi"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="display_name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="tanggal" readonly="status != 'draf'"/>
+                            <field name="petugas_id"/>
+                            <field name="validator_id"/>
+                        </group>
+                        <group>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="nilai_sistem"/>
+                            <field name="nilai_selisih_absolut"/>
+                            <field name="persen_selisih"/>
+                        </group>
+                    </group>
+                    <group invisible="status not in ('menunggu_validasi', 'dikembalikan') and not catatan_pengembalian">
+                        <field name="catatan_pengembalian" readonly="status != 'menunggu_validasi'"
+                               placeholder="Wajib diisi Manajer Operasional sebelum menekan Kembalikan"/>
+                    </group>
+                    <field name="line_ids" readonly="status != 'draf'">
+                        <tree editable="bottom" create="0" delete="0" decoration-danger="is_berbeda">
+                            <field name="bahan_id" readonly="1"/>
+                            <field name="stok_sistem"/>
+                            <field name="jumlah_fisik"/>
+                            <field name="uom_id"/>
+                            <field name="selisih_satuan"/>
+                            <field name="currency_id" column_invisible="1"/>
+                            <field name="harga_pokok" optional="show"/>
+                            <field name="selisih_rupiah" sum="Total"/>
+                            <field name="is_berbeda" column_invisible="1"/>
+                        </tree>
+                    </field>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="ub_stock_opname_view_search" model="ir.ui.view">
+        <field name="name">ub.stock.opname.search</field>
+        <field name="model">ub.stock.opname</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="petugas_id"/>
+                <filter name="filter_menunggu" string="Menunggu Validasi"
+                        domain="[('status', '=', 'menunggu_validasi')]"/>
+                <filter name="filter_tervalidasi" string="Tervalidasi" domain="[('status', '=', 'tervalidasi')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_status" string="Status" context="{'group_by': 'status'}"/>
+                    <filter name="group_bulan" string="Bulan" context="{'group_by': 'tanggal:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="ub_stock_opname_view_pivot" model="ir.ui.view">
+        <field name="name">ub.stock.opname.pivot</field>
+        <field name="model">ub.stock.opname</field>
+        <field name="arch" type="xml">
+            <pivot string="Laporan Selisih Stock Opname">
+                <field name="tanggal" type="row" interval="month"/>
+                <field name="nilai_selisih_absolut" type="measure"/>
+                <field name="persen_selisih" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="ub_stock_opname_action" model="ir.actions.act_window">
+        <field name="name">Stock Opname</field>
+        <field name="res_model">ub.stock.opname</field>
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Catat stock opname Kitchen</p>
+            <p>Semua bahan beserta stok sistemnya terisi otomatis; isi jumlah fisik lalu ajukan validasi ke Manajer Operasional.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_ub_stock_opname" name="Stock Opname"
+              parent="stock.menu_stock_adjustments" action="ub_stock_opname_action"
+              groups="stock.group_stock_user" sequence="15"/>
+</odoo>

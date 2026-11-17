@@ -22,6 +22,7 @@
         "views/stock_picking_views.xml",
         "views/keanggotaan_views.xml",
         "views/sesi_meja_views.xml",
+        "views/stock_opname_views.xml",
         "data/company.xml",
         "data/master_data.xml",
         "data/pos_data.xml",
