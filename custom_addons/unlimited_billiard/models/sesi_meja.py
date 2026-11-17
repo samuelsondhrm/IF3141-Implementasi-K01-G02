@@ -134,6 +134,11 @@ class SesiMeja(models.Model):
         return sesi._pos_data() if sesi else False
 
     @api.model
+    def pos_status_meja(self):
+        """Status turunan Meja (D-07 /status) untuk denah POS: {meja_id: data sesi aktif}."""
+        return {sesi.meja_id.id: sesi._pos_data() for sesi in self.search([("status", "!=", "selesai")])}
+
+    @api.model
     def pos_mulai(self, meja_id, pos_reference, partner_id=False, jenis_tarif="open_table", durasi_dipesan=0):
         sesi = self.create({
             "meja_id": meja_id, "pos_reference": pos_reference, "partner_id": partner_id,

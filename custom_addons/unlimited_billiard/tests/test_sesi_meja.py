@@ -94,3 +94,12 @@ class TestSesiMeja(TransactionCase):
         order = buat_pesanan_pos(self.env, [(self.env.ref("unlimited_billiard.m09"), 1)], draft=True,
                                  uid="ub-test-0001")
         self.assertEqual(self.Sesi.browse(data["id"]).pos_order_id, order)
+
+    def test_status_meja_untuk_denah(self):
+        self.assertEqual(self.Sesi.pos_status_meja(), {})
+        data = self.Sesi.pos_mulai(self.meja.id, "Order ub-denah-0001")
+        status = self.Sesi.pos_status_meja()
+        self.assertEqual(status[self.meja.id]["id"], data["id"])
+        self.assertEqual(status[self.meja.id]["status"], "berjalan")
+        self.Sesi.browse(data["id"]).action_selesai()
+        self.assertEqual(self.Sesi.pos_status_meja(), {})

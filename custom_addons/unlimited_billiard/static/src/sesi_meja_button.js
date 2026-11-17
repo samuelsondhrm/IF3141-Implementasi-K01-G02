@@ -42,6 +42,7 @@ export class SesiMejaButton extends Component {
             return;
         }
         this.state.sesi = await this.orm.call("ub.sesi.meja", "pos_status", [this.order.name, this.order.tableId]);
+        this.pos.ubSesiMeja = { ...this.pos.ubSesiMeja, [this.order.tableId]: this.state.sesi || undefined };
     }
 
     async click() {
@@ -86,6 +87,7 @@ export class SesiMejaButton extends Component {
             jenis_tarif: jenis,
             durasi_dipesan: durasi,
         });
+        this.pos.ubSesiMeja = { ...this.pos.ubSesiMeja, [this.order.tableId]: this.state.sesi };
     }
 
     async selesai() {
@@ -110,6 +112,7 @@ export class SesiMejaButton extends Component {
             line.set_customer_note(hasil.keterangan); // tercetak di setruk
         }
         this.state.sesi = false;
+        this.pos.ubSesiMeja = { ...this.pos.ubSesiMeja, [this.order.tableId]: undefined };
     }
 }
 
