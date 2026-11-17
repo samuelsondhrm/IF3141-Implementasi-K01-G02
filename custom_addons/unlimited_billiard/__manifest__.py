@@ -29,4 +29,9 @@
         "data/cron.xml",
         "views/settings_views.xml",
     ],
+    "assets": {
+        "point_of_sale._assets_pos": [
+            "unlimited_billiard/static/src/**/*",
+        ],
+    },
 }

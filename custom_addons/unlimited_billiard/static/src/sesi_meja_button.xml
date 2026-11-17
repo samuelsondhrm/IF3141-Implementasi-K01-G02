@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="unlimited_billiard.SesiMejaButton">
+        <button class="control-button btn rounded-0 fw-bolder"
+                t-att-class="state.sesi ? (state.sesi.status === 'melewati_batas' ? 'btn-danger' : 'btn-warning') : 'btn-primary'"
+                t-att-disabled="state.busy or !order?.tableId" t-on-click="() => this.click()">
+            <i class="fa fa-clock-o me-1"/>
+            <span t-esc="label"/>
+        </button>
+    </t>
+</templates>

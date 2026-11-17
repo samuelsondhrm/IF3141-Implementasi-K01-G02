@@ -372,11 +372,12 @@
             <field name="pos_categ_ids" eval="[(6, 0, [ref('pos_categ_minuman_kemasan')])]"/>
         </record>
         <!-- Produk layanan (Bagian 7) -->
+        <!-- Satu baris per sesi meja (FR-08); harga produk dan pricelist = tarif per jam yang dipakai ub.sesi.meja. -->
         <record id="sewa_meja" model="product.product">
-            <field name="name">Sewa Meja (per jam)</field>
+            <field name="name">Sewa Meja</field>
             <field name="detailed_type">service</field>
-            <field name="uom_id" ref="uom.product_uom_hour"/>
-            <field name="uom_po_id" ref="uom.product_uom_hour"/>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
             <field name="list_price" eval="37000"/>
             <field name="available_in_pos" eval="True"/>
             <field name="pos_categ_ids" eval="[(6, 0, [ref('pos_categ_sewa_meja')])]"/>

@@ -10,7 +10,7 @@ def buka_sesi_kas(env):
     return config.current_session_id
 
 
-def buat_pesanan_pos(env, lines, partner=None, draft=False):
+def buat_pesanan_pos(env, lines, partner=None, draft=False, uid=None):
     """Meniru data yang dikirim layar POS (create_from_ui). lines = [(product, qty), ...]."""
     session = buka_sesi_kas(env)
     pricelist = session.config_id.pricelist_id
@@ -27,7 +27,7 @@ def buat_pesanan_pos(env, lines, partner=None, draft=False):
         "amount": total, "name": fields.Datetime.to_string(fields.Datetime.now()),
         "payment_method_id": env.ref("unlimited_billiard.pm_tunai").id,
     })]
-    uid = str(uuid4())[:14]
+    uid = uid or str(uuid4())[:14]
     data = {
         "amount_paid": total if not draft else 0, "amount_return": 0, "amount_tax": 0,
         "amount_total": total, "date_order": fields.Datetime.to_string(fields.Datetime.now()),

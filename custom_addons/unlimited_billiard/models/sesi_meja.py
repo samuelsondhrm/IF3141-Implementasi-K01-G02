@@ -111,6 +111,51 @@ class SesiMeja(models.Model):
         self.write({"jam_selesai": fields.Datetime.now(), "ditutup_oleh": self.env.user.id, "status": "selesai"})
         return True
 
+    # --- RPC dari tombol Sesi Meja di layar POS (static/src/sesi_meja_button.js) ---
+
+    @api.model
+    def _pos_cari(self, pos_reference, meja_id):
+        # Cari lewat referensi pesanan dulu, supaya sesi tetap ditemukan setelah pesanan di-Transfer ke meja lain.
+        domain = [("status", "!=", "selesai")]
+        return (self.search(domain + [("pos_reference", "=", pos_reference)], limit=1)
+                or self.search(domain + [("meja_id", "=", meja_id)], limit=1))
+
+    def _pos_data(self):
+        self.ensure_one()
+        return {
+            "id": self.id, "status": self.status, "jenis_tarif": self.jenis_tarif,
+            "jam_mulai": fields.Datetime.to_string(self.jam_mulai), "durasi_menit": self.durasi_menit,
+            "biaya_sewa": self.biaya_sewa, "tarif": self.pricelist_id.name, "is_member": self.is_member,
+        }
+
+    @api.model
+    def pos_status(self, pos_reference, meja_id):
+        sesi = self._pos_cari(pos_reference, meja_id)
+        return sesi._pos_data() if sesi else False
+
+    @api.model
+    def pos_mulai(self, meja_id, pos_reference, partner_id=False, jenis_tarif="open_table", durasi_dipesan=0):
+        sesi = self.create({
+            "meja_id": meja_id, "pos_reference": pos_reference, "partner_id": partner_id,
+            "jenis_tarif": jenis_tarif, "durasi_dipesan": durasi_dipesan,
+            "pos_order_id": self.env["pos.order"].search([("pos_reference", "=", pos_reference)], limit=1).id,
+        })
+        return sesi._pos_data()
+
+    def pos_selesai(self, meja_id, pos_reference, partner_id=False):
+        """Tutup sesi dan kembalikan baris Sewa Meja yang ditambahkan POS ke pesanan (aturan 5)."""
+        self.ensure_one()
+        vals = {"meja_id": meja_id, "pos_reference": pos_reference}
+        if partner_id and not self.partner_id:
+            vals["partner_id"] = partner_id
+        self.write(vals)
+        self.action_selesai()
+        mulai = fields.Datetime.context_timestamp(self, self.jam_mulai).strftime("%H:%M")
+        selesai = fields.Datetime.context_timestamp(self, self.jam_selesai).strftime("%H:%M")
+        return dict(self._pos_data(), product_id=self.env.ref("unlimited_billiard.sewa_meja").id,
+                    keterangan=_("%(meja)s · %(mulai)s–%(selesai)s (%(menit)s menit, %(tarif)s)", meja=self.meja_id.name,
+                                 mulai=mulai, selesai=selesai, menit=self.durasi_menit, tarif=self.pricelist_id.name))
+
     @api.model
     def _cron_melewati_batas(self):
         self.search([("status", "=", "berjalan"), ("jenis_tarif", "=", "durasi_tetap"),

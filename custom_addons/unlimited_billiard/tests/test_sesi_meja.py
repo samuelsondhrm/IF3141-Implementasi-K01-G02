@@ -4,6 +4,8 @@ from odoo import fields
 from odoo.exceptions import ValidationError
 from odoo.tests.common import TransactionCase
 
+from .common import buat_pesanan_pos
+
 
 def wib(jam, menit=0):
     """Waktu WIB 17 Nov 2026 sebagai datetime UTC naif (WIB = UTC+7)."""
@@ -15,6 +17,7 @@ class TestSesiMeja(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.Sesi = cls.env["ub.sesi.meja"]
+        cls.Sesi.search([("status", "!=", "selesai")]).status = "selesai"  # sisa sesi dari DB yang sedang dipakai
         cls.meja = cls.env.ref("unlimited_billiard.meja_03")
         cls.andi = cls.env.ref("unlimited_billiard.pelanggan_andi")  # member aktif
         cls.rizky = cls.env.ref("unlimited_billiard.pelanggan_rizky")  # bukan member
@@ -67,3 +70,27 @@ class TestSesiMeja(TransactionCase):
         rec.action_selesai()
         self.assertEqual(rec.status, "selesai")
         self.assertEqual(rec.ditutup_oleh, self.env.user)
+
+    def test_rpc_pos_transfer_dan_selesai(self):
+        """Opsi A: sesi mengikuti pesanan saat di-Transfer, lalu baris Sewa Meja dikembalikan ke POS."""
+        ref = "Order 00001-001-0001"
+        data = self.Sesi.pos_mulai(self.meja.id, ref, self.rizky.id)
+        self.assertEqual(data["status"], "berjalan")
+        meja_baru = self.env.ref("unlimited_billiard.meja_07")
+        self.assertEqual(self.Sesi.pos_status(ref, meja_baru.id)["id"], data["id"])
+        sesi = self.Sesi.browse(data["id"])
+        sesi.jam_mulai = fields.Datetime.now() - timedelta(minutes=30)
+        hasil = sesi.pos_selesai(meja_baru.id, ref)
+        self.assertEqual(sesi.meja_id, meja_baru)
+        self.assertEqual(sesi.status, "selesai")
+        self.assertEqual(hasil["product_id"], self.env.ref("unlimited_billiard.sewa_meja").id)
+        self.assertEqual(hasil["biaya_sewa"], sesi.biaya_sewa)
+        self.assertGreater(hasil["biaya_sewa"], 0)
+        self.assertIn("Meja 07", hasil["keterangan"])
+        self.assertFalse(self.Sesi.pos_status(ref, meja_baru.id))
+
+    def test_sesi_terkait_pesanan_pos(self):
+        data = self.Sesi.pos_mulai(self.meja.id, "Order ub-test-0001")
+        order = buat_pesanan_pos(self.env, [(self.env.ref("unlimited_billiard.m09"), 1)], draft=True,
+                                 uid="ub-test-0001")
+        self.assertEqual(self.Sesi.browse(data["id"]).pos_order_id, order)

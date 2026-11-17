@@ -11,6 +11,10 @@
     <function model="res.company" name="write"
               eval="[[ref('base.main_company')], {'po_double_validation': 'two_step', 'po_double_validation_amount': 0, 'point_of_sale_update_stock_quantities': 'real'}]"/>
 
+    <!-- Baris Sewa Meja = satu sesi (ub.sesi.meja); untuk DB yang dipasang sebelum produk ini diubah. -->
+    <function model="product.product" name="write"
+              eval="[[ref('sewa_meja')], {'name': 'Sewa Meja', 'uom_id': ref('uom.product_uom_unit'), 'uom_po_id': ref('uom.product_uom_unit')}]"/>
+
     <!-- FR-13 op. (7): ubah harga dan diskon baris di POS hanya untuk POS Manager (Bayu). -->
     <function model="pos.config" name="write"
               eval="[[ref('pos_config_kasir_admin')], {'restrict_price_control': True}]"/>
