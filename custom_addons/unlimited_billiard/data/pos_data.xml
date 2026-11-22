@@ -163,4 +163,25 @@
             <field name="reward_ids" eval="[(0, 0, {'reward_type': 'product', 'reward_product_id': ref('m09'), 'reward_product_qty': 1, 'required_points': 50})]"/>
         </record>
     </data>
+
+    <!-- Sisa data USD bawaan modul lain. Di luar noupdate agar ikut diterapkan saat upgrade (-u). -->
+    <data>
+        <!-- Pecahan uang (Opening/Closing Cash Control) bawaan point_of_sale adalah pecahan USD (0.01-200).
+             Pecahan < 100 dihapus, 100 dan 200 dipakai sebagai koin Rp100/Rp200, sisanya pecahan Rupiah. -->
+        <delete model="pos.bill" search="[('value', '&lt;', 100)]"/>
+        <record id="bill_500" model="pos.bill"><field name="name">500</field><field name="value">500</field></record>
+        <record id="bill_1000" model="pos.bill"><field name="name">1000</field><field name="value">1000</field></record>
+        <record id="bill_2000" model="pos.bill"><field name="name">2000</field><field name="value">2000</field></record>
+        <record id="bill_5000" model="pos.bill"><field name="name">5000</field><field name="value">5000</field></record>
+        <record id="bill_10000" model="pos.bill"><field name="name">10000</field><field name="value">10000</field></record>
+        <record id="bill_20000" model="pos.bill"><field name="name">20000</field><field name="value">20000</field></record>
+        <record id="bill_50000" model="pos.bill"><field name="name">50000</field><field name="value">50000</field></record>
+        <record id="bill_100000" model="pos.bill"><field name="name">100000</field><field name="value">100000</field></record>
+
+        <!-- Program Gift Cards dari modul loyalty dibuat sebelum mata uang perusahaan menjadi IDR. -->
+        <function model="loyalty.program" name="write">
+            <value eval="[ref('loyalty.gift_card_program')]"/>
+            <value eval="{'currency_id': ref('base.IDR'), 'portal_point_name': 'Rp'}"/>
+        </function>
+    </data>
 </odoo>
