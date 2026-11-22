@@ -16,7 +16,8 @@ patch(FloorScreen.prototype, {
     setup() {
         super.setup(...arguments);
         const muat = async () => {
-            this.pos.ubSesiMeja = await this.orm.call("ub.sesi.meja", "pos_status_meja", []);
+            // env.services.orm, bukan this.orm (useService): layar denah bisa sudah ditutup saat jawaban tiba.
+            this.pos.ubSesiMeja = await this.env.services.orm.call("ub.sesi.meja", "pos_status_meja", []);
         };
         onWillStart(muat);
         const timer = setInterval(muat, 30000);

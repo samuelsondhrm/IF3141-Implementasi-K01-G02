@@ -17,7 +17,8 @@ export class SesiMejaButton extends Component {
     setup() {
         this.pos = usePos();
         this.popup = useService("popup");
-        this.orm = useService("orm");
+        // ORM tanpa proteksi komponen: refresh/aksi yang masih berjalan saat layar ditinggalkan tidak memunculkan "Component is destroyed".
+        this.orm = this.env.services.orm;
         this.state = useState({ sesi: false, busy: false });
         onWillStart(() => this.refresh());
         const timer = setInterval(() => this.refresh(), 30000);
@@ -38,11 +39,12 @@ export class SesiMejaButton extends Component {
     }
 
     async refresh() {
-        if (!this.order?.tableId) {
+        const order = this.order;
+        if (!order?.tableId) {
             return;
         }
-        this.state.sesi = await this.orm.call("ub.sesi.meja", "pos_status", [this.order.name, this.order.tableId]);
-        this.pos.ubSesiMeja = { ...this.pos.ubSesiMeja, [this.order.tableId]: this.state.sesi || undefined };
+        this.state.sesi = await this.orm.call("ub.sesi.meja", "pos_status", [order.name, order.tableId]);
+        this.pos.ubSesiMeja = { ...this.pos.ubSesiMeja, [order.tableId]: this.state.sesi || undefined };
     }
 
     async click() {
