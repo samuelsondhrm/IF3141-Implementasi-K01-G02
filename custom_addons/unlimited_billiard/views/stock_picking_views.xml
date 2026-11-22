@@ -7,7 +7,6 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='origin']" position="after">
                 <field name="ub_no_faktur" invisible="picking_type_code != 'incoming'"
-                       required="picking_type_code == 'incoming' and state not in ('draft', 'cancel', 'done')"
                        readonly="state in ('cancel', 'done')"/>
             </xpath>
         </field>
