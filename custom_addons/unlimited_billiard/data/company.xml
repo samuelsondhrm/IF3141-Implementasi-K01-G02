@@ -3,9 +3,6 @@
     <data noupdate="1">
         <record id="base.IDR" model="res.currency">
             <field name="active" eval="True"/>
-            <!-- Rupiah tanpa sen ("Rp 500", bukan "Rp 500.00"). Harus sebelum chart of accounts: Odoo menolak
-                 mengurangi desimal mata uang yang sudah punya jurnal, jadi hanya berlaku pada instalasi baru. -->
-            <field name="rounding">1</field>
         </record>
 
         <record id="base.main_company" model="res.company">
