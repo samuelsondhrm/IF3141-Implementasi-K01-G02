@@ -136,5 +136,13 @@ Pendekatan *hybrid* (memakai fitur standar Odoo dan hanya mengustom yang menjawa
 - **Port 8069 terpakai**: ubah `ODOO_PORT` di `.env`, lalu `docker compose up -d`.
 - **`variable is missing a value`**: `.env` belum dibuat atau belum diisi.
 - **`Failed to initialize database` saat langkah 2**: `docker compose up -d` sempat dijalankan lebih dulu. Jalankan `docker compose down -v`, lalu ulangi dari langkah 2.
+- **Setelah `git pull`, Odoo kosong / database hilang**: sejak volume Docker diberi awalan nama folder, clone lama masih menyimpan data di volume `odoo-db-data` dan `odoo-web-data`. Pindahkan sekali saja (ganti `if3141-implementasi-k01-g02` dengan nama folder repo dalam huruf kecil, cek dengan `docker volume ls`; di Git Bash awali tiap perintah dengan `MSYS_NO_PATHCONV=1`):
+  ```bash
+  docker compose down
+  docker run --rm -v odoo-db-data:/lama -v if3141-implementasi-k01-g02_odoo-db-data:/baru postgres:16-alpine sh -c "cp -a /lama/. /baru/"
+  docker run --rm -v odoo-web-data:/lama -v if3141-implementasi-k01-g02_odoo-web-data:/baru postgres:16-alpine sh -c "cp -a /lama/. /baru/"
+  docker compose up -d
+  ```
+  Bila data lama tidak diperlukan, cukup ulangi langkah 2–3. Setelah data terverifikasi, volume lama boleh dihapus: `docker volume rm odoo-db-data odoo-web-data`.
 - **Modul tidak muncul**: pastikan langkah 3 dijalankan, atau aktifkan Developer Mode lalu **Apps › Update Apps List**.
 - **Skrip `.sh` error `\r`**: pastikan file memakai LF (`.gitattributes` sudah mengaturnya; clone ulang bila perlu).

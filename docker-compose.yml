@@ -30,8 +30,7 @@ services:
       - odoo-web-data:/var/lib/odoo
     command: odoo -d ${ODOO_DB_NAME:-odoo_app} --without-demo=all --dev=reload,xml
 
+# Tanpa nama tetap: volume diberi awalan nama folder, jadi tiap clone punya database sendiri.
 volumes:
   odoo-web-data:
-    name: odoo-web-data
   odoo-db-data:
-    name: odoo-db-data
